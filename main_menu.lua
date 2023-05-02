@@ -1,3 +1,3 @@
 #!/usr/bin/lua
 
-print("hello")
+print("helloasdad")
