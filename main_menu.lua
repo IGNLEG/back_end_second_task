@@ -23,8 +23,29 @@ local function print_file_names()
     print("Available config files on your system: ")
     print("--------------------------------------")
 
-    for _, v in ipairs(files) do print(v) end
+    for k, v in ipairs(files) do print(string.format("[%d] [%s]", k, v)) end
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+    return _Main_menu()
+end
+
+local function select_config()
+    print("Select config:")
+    local files = scandir("/etc/config")
+    local input, options = nil, {}
+    for k, v in ipairs(files) do
+        options[tostring(k)] = v
+        print(string.format("[%d] : [%s]", k, v))
+    end
+
+    print("[x] : Return to main menu.")
+    options["x"] = _Main_menu
+    repeat input = io.read() until options[input]
+    if input == "x" then return options[input]() end
+    return options[input]
+end
+
+local function enter_config_menu(config_name)
+    return config_menu_module.enter_menu(config_name)
 end
 
 local function handleInput(opt)
@@ -32,13 +53,6 @@ local function handleInput(opt)
     repeat input = io.read() until opt[input]
 
     return opt[input]()
-end
-
-local function enter_config_menu()
-    print("Which configs' menu do you want to enter?")
-    local input
-    repeat input = io.read() until input
-    return config_menu_module.enter_menu(input)
 end
 
 function _Main_menu()
@@ -52,7 +66,7 @@ function _Main_menu()
 
     return handleInput({
         ["1"] = print_file_names,
-        ["2"] = enter_config_menu,
+        ["2"] = function() enter_config_menu(select_config()) end,
         ["x"] = os.exit
     })
 end

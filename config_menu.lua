@@ -6,7 +6,13 @@ local config_name
 local function print_config()
     for _, v in pairs(x:get_all(config_name)) do
         print("--------------------------------------")
-        for k, w in pairs(v) do print(k, w) end
+        for k, w in pairs(v) do
+            if (type(w) == "table") then
+                for _, s in pairs(w) do print(k, s) end
+            else
+                print(k, w)
+            end
+        end
     end
     return _Config_menu.config_menu()
 end
@@ -75,8 +81,8 @@ function _Config_menu.config_menu()
     print("[3] Create a new section.")
     print("[4] Delete section.")
     print("[5] Enter a sections menu.")
-    --     print("[6] Discard all changes that are not yet commited.")
-    --     print("[7] Commit changes to config.")
+    print("[6] Discard all changes that are not yet commited.")
+    print("[7] Commit changes to config.")
     print("[x] Return to main menu.")
 
     return handleInput({
@@ -84,9 +90,11 @@ function _Config_menu.config_menu()
         ["2"] = function() print_section(select_section()) end,
         ["3"] = create_section,
         ["4"] = function() delete_section(select_section()) end,
-        ["5"] = function() section_menu_module.enter_menu(config_name, select_section()) end,
-        -- ["6"] = x:revert(config_name),
-        -- ["7"] = x:commit(config_name),
+        ["5"] = function()
+            section_menu_module.enter_menu(config_name, select_section())
+        end,
+        ["6"] = function() x:revert(config_name) return _Config_menu.config_menu() end,
+        ["7"] = function() x:commit(config_name) return _Config_menu.config_menu() end,
         ["x"] = _Main_menu
     })
 end
