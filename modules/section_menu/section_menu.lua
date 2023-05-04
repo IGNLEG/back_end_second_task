@@ -13,7 +13,12 @@ end
 local function select_option()
     print("Select option:")
     local input, i, options = nil, 0, {}
-    for k, v in pairs(x:get_all(config_name, section_name)) do
+    local status, value = pcall(x.get_all, x ,config_name, section_name)
+    if not status then 
+        print("Error:" .. value .. " while getting option list.") 
+        return _Section_menu.section_menu() 
+    end
+    for k, v in pairs(value) do
         i = i + 1
         options[tostring(i)] = k
         if type(v) == "table" then
@@ -33,12 +38,10 @@ local function select_option()
 end
 
 local function set_option_input(option_name, replace)
-    local status, values = pcall(x.get, x, config_name, section_name,
-                                 option_name)
+    local status, values = pcall(x.get, x, config_name, section_name, option_name)
     if not status or replace then values = {} end
     local input
-    print("Enter new value(s) for option " .. option_name ..
-              " (type 'x' or leave blank space to finish):")
+    print("Enter new value(s) for option " .. option_name .. " (type 'x' or leave blank to finish):")
     repeat
         input = io.read()
         if (input ~= "" and input ~= "x") then

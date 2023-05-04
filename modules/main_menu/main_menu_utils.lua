@@ -3,7 +3,12 @@ local config_menu_module = require "modules/config_menu/config_menu"
 
 function _Main_menu_utils.scandir(directory)
     local i, t, popen = 0, {}, io.popen
-    local pfile = popen('ls -h "' .. directory .. '"')
+    local status, pfile = pcall(popen, 'ls -h "' .. directory .. '"')
+    if not status then 
+        print("Error: " .. status .. " while executing popen.") 
+        return _Main_menu.main_menu() 
+    end
+    
     for filename in pfile:lines() do
         if not filename:match "^.+(%..+)$" then
             i = i + 1
@@ -16,6 +21,12 @@ end
 
 function _Main_menu_utils.print_file_names()
     local files = _Main_menu_utils.scandir("/etc/config")
+    
+    if #files == 0 then 
+        print("No config files found.") 
+        return os.exit() 
+    end
+    
     print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
     print("Available config files on your system: ")
     print("--------------------------------------")

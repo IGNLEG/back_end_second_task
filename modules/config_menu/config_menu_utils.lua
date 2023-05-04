@@ -2,7 +2,12 @@ _Config_menu_utils = {}
 local section_menu_module = require("modules/section_menu/section_menu")
 
 function _Config_menu_utils.print_config(config_name)
-    for _, v in pairs(x:get_all(config_name)) do
+    local status, value = pcall(x.get_all, x, config_name)
+    if not status then 
+        print ("Error: " .. value .. " while getting config sections.") 
+        return _Config_menu.config_menu() 
+    end
+    for _, v in pairs(value) do
         print("--------------------------------------")
         for k, w in pairs(v) do
             if (type(w) == "table") then

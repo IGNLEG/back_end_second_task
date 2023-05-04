@@ -4,7 +4,12 @@ local config_menu_utils = require("modules/config_menu/config_menu_utils")
 function _Config_menu.select_section()
     print("Select section:")
     local input, i, options = nil, 0, {}
-    for _, v in pairs(x:get_all(config_name)) do
+    local status, value = pcall(x.get_all, x, config_name)
+    if not status then 
+        print ("Error: " .. value .. " while getting config sections.") 
+        return _Config_menu.config_menu() 
+    end
+    for _, v in pairs(value) do
         i = i + 1
         options[tostring(i)] = v[".name"]
         print(string.format("[%d] : [%s]", i, v[".name"]))
@@ -66,11 +71,13 @@ function _Config_menu.config_menu()
                                          _Config_menu.select_section())
         end,
         ["6"] = function()
-            x:revert(config_name)
+            local status, value = pcall(x.revert, config_name)
+            if not status then print("Error: " .. value .. " while reverting changes.") end
             return _Config_menu.config_menu()
         end,
         ["7"] = function()
-            x:commit(config_name)
+            local status, value = pcall(x.commit, config_name)
+            if not status then print("Error: " .. value .. " while committing changes.") end
             return _Config_menu.config_menu()
         end,
         ["x"] = _Main_menu.main_menu

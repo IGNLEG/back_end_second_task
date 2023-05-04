@@ -7,6 +7,12 @@ local main_menu_utils = require "modules/main_menu/main_menu_utils"
 function _Main_menu.select_config()
     print("Select config:")
     local files = _Main_menu_utils.scandir("/etc/config")
+
+    if #files == 0 then 
+        print("No config files found.") 
+        return os.exit() 
+    end
+
     local input, options = nil, {}
     for k, v in ipairs(files) do
         options[tostring(k)] = v
@@ -15,6 +21,7 @@ function _Main_menu.select_config()
 
     print("[x] : Return to main menu.")
     options["x"] = _Main_menu.main_menu
+    
     repeat input = io.read() until options[input]
     if input == "x" then return options[input]() end
     return options[input]
