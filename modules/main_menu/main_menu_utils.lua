@@ -8,7 +8,10 @@ function _Main_menu_utils.scandir(directory)
         print("Error: " .. status .. " while executing popen.") 
         return _Main_menu.main_menu() 
     end
-    
+    if pfile == nil then 
+        print("Error: " .. status .. " while getting data from popen.") 
+        return _Main_menu.main_menu() 
+    end
     for filename in pfile:lines() do
         if not filename:match "^.+(%..+)$" then
             i = i + 1
